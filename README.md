@@ -12,7 +12,7 @@ Telegram AI assistant MVP for Centr Krasok.
 - Short in-memory dialog history per Telegram chat.
 - Company voice polishing for generated answers.
 - Guardrails that block answers when relevant context is missing.
-- Optional OpenAI-compatible and Amvera integrations with deterministic offline fallback.
+- Gemini API integration through the OpenAI-compatible endpoint, plus Amvera/offline fallback.
 
 ## Run locally
 
@@ -39,11 +39,22 @@ Required production variables:
 - `TELEGRAM_BOT_TOKEN`
 - `TELEGRAM_WEBHOOK_URL`
 - `TELEGRAM_WEBHOOK_SECRET`
-- `AI_PROVIDER`, one of `auto`, `openai`, `amvera`, `offline`
-- `OPENAI_API_KEY` for OpenAI-compatible providers
+- `AI_PROVIDER`, defaults to `openai` for Gemini's OpenAI-compatible endpoint
+- `OPENAI_API_KEY` with your Gemini API key from Google AI Studio
+- `OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/`
+- `OPENAI_MODEL=gemini-2.5-flash-lite`
 - `AMVERA_API_TOKEN` for Amvera
 
 If no AI provider token is configured, the bot uses an offline fact-based answer from retrieved context.
+
+Default AI configuration:
+
+```env
+AI_PROVIDER=openai
+OPENAI_API_KEY=your_gemini_api_key
+OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
+OPENAI_MODEL=gemini-2.5-flash-lite
+```
 
 ## Connect Telegram webhook
 

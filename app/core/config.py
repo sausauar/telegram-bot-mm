@@ -96,10 +96,10 @@ def load_settings() -> Settings:
         log_level=os.getenv("LOG_LEVEL", "INFO"),
         telegram_bot_token=_optional(os.getenv("TELEGRAM_BOT_TOKEN")),
         telegram_webhook_secret=_optional(os.getenv("TELEGRAM_WEBHOOK_SECRET")),
-        ai_provider=os.getenv("AI_PROVIDER", "auto"),
+        ai_provider=os.getenv("AI_PROVIDER", "openai"),
         openai_api_key=_optional(os.getenv("OPENAI_API_KEY")),
-        openai_model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
-        openai_base_url=_optional(os.getenv("OPENAI_BASE_URL")),
+        openai_model=os.getenv("OPENAI_MODEL", "gemini-2.5-flash-lite"),
+        openai_base_url=_optional(os.getenv("OPENAI_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/openai/")),
         amvera_api_token=_optional(os.getenv("AMVERA_API_TOKEN")),
         amvera_api_url=os.getenv(
             "AMVERA_API_URL", "https://kong-proxy.yc.amvera.ru/api/v1/models/gpt"
