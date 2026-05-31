@@ -46,7 +46,7 @@ async def test_rag_service_uses_retrieved_context_offline() -> None:
 
     answer = await service.answer(1, "Есть доставка?")
 
-    assert answer.sources == []
+    assert [source.title for source in answer.sources] == ["Доставка"]
     assert "доставка" in answer.text.lower()
     assert answer.used_llm is False
 

@@ -26,9 +26,18 @@ SMALLTALK_WORDS = {
 }
 
 INTERNAL_PROMPT_MARKERS = (
+    "chunk",
+    "chunks",
+    "rag chunks",
+    "retrieval",
     "system prompt",
     "ignore previous instructions",
     "ignore all instructions",
+    "раг",
+    "чанк",
+    "чанки",
+    "найденные chunks",
+    "найденные чанки",
     "системный prompt",
     "системный промпт",
     "системные инструкции",
@@ -64,6 +73,16 @@ STOCK_TERMS = (
 PROMOTION_TERMS = ("акци", "скидк", "спецпредлож")
 VACANCY_TERMS = ("ваканс", "зарплат", "работа у вас")
 CLIENTS_TERMS = ("клиент", "покупател", "заказчик", "партнер", "партнёр")
+SENSITIVE_UNKNOWN_TERMS = (
+    "владелец",
+    "директор",
+    "руководитель",
+    "основатель",
+    "полный список клиентов",
+    "список клиентов",
+    "все клиенты",
+    "назови клиентов",
+)
 
 COMPANY_OVERVIEW_PATTERNS = (
     "что такое центр красок",
@@ -81,10 +100,44 @@ COMPANY_OVERVIEW_PATTERNS = (
     "почему стоит обратиться",
 )
 
+KNOWN_BRAND_TERMS = (
+    "anza",
+    "argile",
+    "charmant",
+    "dufa",
+    "dulux",
+    "hammerite",
+    "kelly-moore",
+    "kudo",
+    "levis",
+    "milq",
+    "maitre deco",
+    "mako",
+    "marshall",
+    "master color",
+    "orac decor",
+    "oikos",
+    "pinotex",
+    "pufas",
+    "paint & paper library",
+    "profilux",
+    "sikkens",
+    "swiss lake",
+    "timbercare",
+    "tytan",
+    "teknos",
+    "wagner",
+)
+
 PRODUCT_TERMS = (
     "товары",
     "товар",
     "ассортимент",
+    "материал",
+    "материалы",
+    "технологии",
+    "технология",
+    "используются",
     "что продаете",
     "что продаёте",
     "что у вас есть",
@@ -104,14 +157,43 @@ SERVICE_TERMS = (
     "чем можете помочь",
     "колеровка",
     "подбор цвета",
+    "подобрать цвет",
+    "выбрать цвет",
+)
+
+DESIGNER_TERMS = (
+    "дизайнер",
+    "дизайнерам",
+    "дизайнеров",
+)
+
+BUILDER_TERMS = (
+    "строител",
+    "подрядчик",
+    "бригада",
+    "проектным клиент",
 )
 
 DELIVERY_TERMS = (
     "доставка",
+    "доставки",
     "доставку",
+    "график доставки",
     "доставляете",
     "самовывоз",
     "забрать из шоурума",
+)
+
+CONTACT_TERMS = (
+    "контакт",
+    "телефон",
+    "номер",
+    "адрес",
+    "где находится",
+    "офис",
+    "магазин",
+    "email",
+    "почта",
 )
 
 UNKNOWN_PRODUCT_EXCLUSIONS = (
@@ -198,6 +280,12 @@ def detect_intent(text: str) -> Intent:
         return Intent.GREETING
     if any(marker in normalized for marker in INTERNAL_PROMPT_MARKERS):
         return Intent.INTERNAL_PROMPT
+    if any(term in normalized for term in OUT_OF_SCOPE_TERMS) and not any(
+        term in normalized for term in COMPANY_RELATED_TERMS
+    ):
+        return Intent.OUT_OF_SCOPE
+    if any(term in normalized for term in SENSITIVE_UNKNOWN_TERMS):
+        return Intent.SENSITIVE_UNKNOWN
     if any(pattern in normalized for pattern in COMPANY_OVERVIEW_PATTERNS):
         return Intent.COMPANY_OVERVIEW
     if any(term in normalized for term in PRICE_TERMS):
@@ -210,9 +298,15 @@ def detect_intent(text: str) -> Intent:
         return Intent.VACANCIES
     if any(term in normalized for term in CLIENTS_TERMS):
         return Intent.CLIENTS
+    if any(term in normalized for term in DESIGNER_TERMS):
+        return Intent.DESIGNERS
+    if any(term in normalized for term in BUILDER_TERMS):
+        return Intent.BUILDERS
+    if any(term in normalized for term in CONTACT_TERMS):
+        return Intent.CONTACTS
     if any(term in normalized for term in DELIVERY_TERMS):
         return Intent.DELIVERY
-    if any(term in normalized for term in BRAND_TERMS):
+    if any(term in normalized for term in BRAND_TERMS + KNOWN_BRAND_TERMS):
         return Intent.BRANDS
     if any(term in normalized for term in SERVICE_TERMS):
         return Intent.SERVICES
@@ -223,10 +317,27 @@ def detect_intent(text: str) -> Intent:
     return Intent.GENERAL_RAG
 
 
+def is_repeat_request(text: str) -> bool:
+    normalized = normalize_text(text)
+    return any(
+        marker in normalized
+        for marker in (
+            "повтори",
+            "повторить",
+            "коротко повтори",
+            "коротко повторить",
+            "еще раз",
+            "ещё раз",
+        )
+    )
+
+
 def is_unknown_product_question(text: str) -> bool:
     if not any(marker in text for marker in ("у вас есть", "есть ли")):
         return False
     if any(marker in text for marker in UNKNOWN_PRODUCT_EXCLUSIONS):
+        return False
+    if any(brand in text for brand in KNOWN_BRAND_TERMS):
         return False
     return bool(
         any(char.isdigit() for char in text)
@@ -244,4 +355,3 @@ def is_out_of_scope_question(text: str, chunks: list[ScoredChunk]) -> bool:
     if any(term in normalized for term in OUT_OF_SCOPE_TERMS):
         return True
     return not chunks
-

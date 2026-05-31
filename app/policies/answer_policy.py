@@ -38,9 +38,23 @@ UNKNOWN_PRODUCT_ANSWER = (
     "актуальное наличие у менеджера Centr Krasok."
 )
 
+SENSITIVE_UNKNOWN_ANSWER = (
+    "В подготовленной информации Centr Krasok нет достаточно подтвержденных данных для точного "
+    "ответа на этот вопрос. Лучше уточнить это по официальным контактам компании."
+)
+
 DELIVERY_ANSWER = (
-    "У Centr Krasok в базе указаны доставка до двери и самовывоз из шоурума. Детали по срокам, "
+    "У Centr Krasok указаны доставка до двери и самовывоз из шоурума. Детали по срокам, "
     "стоимости и условиям доставки лучше уточнять у менеджера, потому что эти данные могут меняться."
+)
+
+CONTACTS_ANSWER = (
+    "Основной контакт Centr Krasok: +7 778 061 5000, email info@centr-krasok.kz. "
+    "График на сайте: ежедневно с 10:00 до 20:00. Алматы: ул. Кабдолова 1/8, блок 1, "
+    "1 ряд, линия D, бутик 14; телефоны +7 778 061 5000, +7 701 877 5000, "
+    "+7 701 974 5000. Алматы ultra premium: ул. Кабдолова 1/8, блок 1, 1 ряд, "
+    "линия D, 21 бутик; телефоны +7 778 800 4442, +7 778 800 4445. Астана: "
+    "ул. Мангилик Ел, 29/2; телефон +7 701 943 5000."
 )
 
 COMPANY_OVERVIEW_ANSWER = (
@@ -56,10 +70,10 @@ PRODUCTS_ANSWER = (
 )
 
 BRANDS_ANSWER = (
-    "В базе знаний указаны бренды Anza, Argile, Charmant, dufa, Dulux, Hammerite, Kelly-Moore, "
+    "У Centr Krasok указаны бренды Anza, Argile, Charmant, dufa, Dulux, Hammerite, Kelly-Moore, "
     "KUDO, Levis, Milq, Maitre Deco, MAKO, Marshall, MASTER color, Orac Decor, Oikos, Pinotex, "
     "PUFAS, Paint & Paper Library, Profilux, Sikkens, Swiss Lake, TimberCare, Tytan, TEKNOS, "
-    "Wagner и другие. Наличие конкретного бренда лучше уточнить у менеджера."
+    "Wagner и другие. Наличие конкретного бренда или позиции лучше уточнить у менеджера."
 )
 
 SERVICES_ANSWER = (
@@ -67,9 +81,23 @@ SERVICES_ANSWER = (
     "технологии нанесения, колеровкой, доставкой, самовывозом и сопровождением проектных клиентов."
 )
 
+DESIGNERS_ANSWER = (
+    "Для дизайнеров Centr Krasok предлагает консультации экспертов, подбор материалов и цветов "
+    "под проект, бесплатные образцы для тестирования оттенков, цветовые веера и каталоги, "
+    "персонального менеджера, быструю доставку, гибкие условия оплаты, специальные предложения, "
+    "скидки, бонусы и программу лояльности."
+)
+
+BUILDERS_ANSWER = (
+    "Для строителей и подрядчиков Centr Krasok предлагает подбор материалов под бюджет, онлайн "
+    "и офлайн формат работы, выезд экспертов, пробные выкрасы, экспертизу стен перед покраской, "
+    "обучение бригады, сопровождение проекта, специальные скидки на объем и быструю доставку "
+    "на объект."
+)
+
 CLIENTS_ANSWER = (
     "Centr Krasok работает с частными покупателями, дизайнерами, строителями и проектными "
-    "заказчиками. В базе также описаны условия поддержки для дизайнеров, подрядчиков и проектов."
+    "заказчиками. Также описаны условия поддержки для дизайнеров, подрядчиков и проектов."
 )
 
 OUT_OF_SCOPE_ANSWER = (
@@ -79,16 +107,12 @@ OUT_OF_SCOPE_ANSWER = (
 
 DETERMINISTIC_ANSWERS = {
     Intent.GREETING: GREETING_ANSWER,
-    Intent.COMPANY_OVERVIEW: COMPANY_OVERVIEW_ANSWER,
-    Intent.PRODUCTS: PRODUCTS_ANSWER,
-    Intent.BRANDS: BRANDS_ANSWER,
-    Intent.SERVICES: SERVICES_ANSWER,
-    Intent.DELIVERY: DELIVERY_ANSWER,
     Intent.PRICE: PRICE_ANSWER,
     Intent.STOCK: STOCK_ANSWER,
     Intent.PROMOTIONS: PROMOTIONS_ANSWER,
     Intent.VACANCIES: VACANCIES_ANSWER,
-    Intent.CLIENTS: CLIENTS_ANSWER,
+    Intent.SENSITIVE_UNKNOWN: SENSITIVE_UNKNOWN_ANSWER,
+    Intent.OUT_OF_SCOPE: OUT_OF_SCOPE_ANSWER,
     Intent.INTERNAL_PROMPT: SYSTEM_PROMPT_REFUSAL,
     Intent.UNKNOWN_PRODUCT: UNKNOWN_PRODUCT_ANSWER,
 }
@@ -96,4 +120,3 @@ DETERMINISTIC_ANSWERS = {
 
 def build_deterministic_answer(intent: Intent) -> str | None:
     return DETERMINISTIC_ANSWERS.get(intent)
-

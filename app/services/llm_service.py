@@ -12,6 +12,14 @@ INTERNAL_KNOWLEDGE_MARKERS = {
     "Known facts:",
     "Answering rules:",
 }
+INTERNAL_LINE_PREFIXES = (
+    "Нельзя ",
+    "Можно ",
+    "Если пользователь",
+    "При вопросе",
+    "Не называть",
+    "Не раскрывать",
+)
 
 
 class LlmService:
@@ -113,7 +121,11 @@ class LlmService:
         for chunk in chunks[:2]:
             for raw_line in chunk.content.splitlines():
                 line = raw_line.strip(" -#")
+                if line == "Answering rules:":
+                    break
                 if not line or line == chunk.title or line in INTERNAL_KNOWLEDGE_MARKERS:
+                    continue
+                if line.startswith(INTERNAL_LINE_PREFIXES):
                     continue
                 if line.startswith("Дата подготовки") or line.startswith("Назначение файла"):
                     continue

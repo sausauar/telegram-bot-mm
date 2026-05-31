@@ -6,6 +6,12 @@ import os
 import sys
 from urllib import request
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv не установлен, используем системные переменные окружения
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Configure Telegram webhook.")

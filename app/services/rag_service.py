@@ -2,7 +2,7 @@
 
 from app.policies.answer_policy import OUT_OF_SCOPE_ANSWER, build_deterministic_answer
 from app.policies.voice import apply_company_voice
-from app.router.router import detect_intent, is_out_of_scope_question
+from app.router.router import detect_intent, is_out_of_scope_question, is_repeat_request
 from app.schemas.rag import RagAnswer
 from app.services.dialog_memory import DialogMemory
 from app.services.guardrails import Guardrails
@@ -34,6 +34,12 @@ class RagService:
                 used_llm=False,
             )
 
+        if is_repeat_request(cleaned_text):
+            repeated_answer = self._short_repeat(chat_id)
+            if repeated_answer:
+                self._remember(chat_id, cleaned_text, repeated_answer)
+                return RagAnswer(text=repeated_answer, sources=[], used_llm=False)
+
         intent = detect_intent(cleaned_text)
         deterministic_answer = build_deterministic_answer(intent)
         if deterministic_answer:
@@ -60,3 +66,15 @@ class RagService:
     def _remember(self, chat_id: int, user_text: str, answer_text: str) -> None:
         self._memory.add(chat_id, "user", user_text)
         self._memory.add(chat_id, "assistant", answer_text)
+
+    def _short_repeat(self, chat_id: int) -> str | None:
+        for message in reversed(self._memory.get(chat_id)):
+            if message["role"] != "assistant":
+                continue
+            text = " ".join(message["content"].split())
+            if not text:
+                continue
+            if len(text) <= 260:
+                return text
+            return text[:257].rstrip(" ,.;:") + "..."
+        return None
